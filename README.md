@@ -8,7 +8,7 @@ Cinematic personal portfolio: projects, skills, cricket, football, drawing, phot
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/portfolio/
+npm run dev      # http://localhost:5173/
 npm run build    # production build into dist/
 ```
 
@@ -22,7 +22,7 @@ npm run build    # production build into dist/
 ## Deploy
 
 Pushing to `main` builds and deploys to GitHub Pages via `.github/workflows/deploy.yml`.
-For another host, build with `BASE=/ npm run build`.
+Vercel: `vercel deploy --prod` (config in `vercel.json`). The Pages workflow builds with `BASE=/portfolio/`.
 
 ## Accessibility
 
