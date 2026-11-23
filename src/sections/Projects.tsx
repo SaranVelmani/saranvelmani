@@ -15,14 +15,15 @@ function Media({ p }: { p: Project }) {
   return (
     <div className="relative h-full w-full bg-[#0b0d10]">
       <img src={p.images[0]} alt={`${p.name} screenshot 1`} loading="lazy" className="pj-img h-full w-full object-cover object-top opacity-90" />
-      <div className="absolute bottom-4 right-4 flex gap-3 md:bottom-8 md:right-8">
+      {/* Fanned cards only where there is room; phones get a thumbnail strip under the frame. */}
+      <div className="absolute bottom-4 right-4 hidden gap-3 sm:flex md:bottom-8 md:right-8">
         {p.images.slice(1).map((src, i) => (
           <img
             key={src}
             src={src}
             alt={`${p.name} screenshot ${i + 2}`}
             loading="lazy"
-            className="pj-fan aspect-[16/10] w-28 rounded-lg border border-white/20 object-cover object-top shadow-2xl md:w-48"
+            className="pj-fan aspect-[16/10] w-32 rounded-lg border border-white/20 object-cover object-top shadow-2xl md:w-48"
           />
         ))}
       </div>
@@ -34,8 +35,8 @@ function Row({ p, i }: { p: Project; i: number }) {
   const flip = i % 2 === 1
   return (
     <article className="pj-row grid items-center gap-10 py-16 md:py-24 lg:grid-cols-12 lg:gap-16" style={{ ['--accent' as string]: p.accent }}>
-      <div className={`lg:col-span-7 ${flip ? 'lg:order-2' : ''}`}>
-        <div className="pj-frame group relative aspect-[16/11] overflow-hidden rounded-3xl border border-white/10 bg-steel" data-cursor={p.live ? 'VIEW' : undefined}>
+      <div className={`min-w-0 lg:col-span-7 ${flip ? 'lg:order-2' : ''}`}>
+        <div className="pj-frame group relative aspect-[4/3] sm:aspect-[16/11] overflow-hidden rounded-3xl border border-white/10 bg-steel" data-cursor={p.live ? 'VIEW' : undefined}>
           <div className="pj-inner h-full w-full transition-transform duration-[1.2s] ease-[cubic-bezier(.2,.8,.2,1)] group-hover:scale-[1.04]">
             <Media p={p} />
           </div>
@@ -45,9 +46,16 @@ function Row({ p, i }: { p: Project; i: number }) {
             <a href={p.live} target="_blank" rel="noreferrer" className="absolute inset-0" aria-label={`Open ${p.name} live`} data-cursor="VIEW" />
           )}
         </div>
+        {p.images.length > 1 && (
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:hidden">
+            {p.images.slice(1).map((src, k) => (
+              <img key={src} src={src} alt={`${p.name} screenshot ${k + 2}`} loading="lazy" className="pj-thumb aspect-[16/10] w-full rounded-xl border border-white/10 object-cover object-top" />
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className={`lg:col-span-5 ${flip ? 'lg:order-1' : ''}`}>
+      <div className={`min-w-0 lg:col-span-5 ${flip ? 'lg:order-1' : ''}`}>
         <div className="pj-meta flex items-center gap-4">
           <span className="display text-6xl md:text-7xl" style={{ color: p.accent }}>{String(i + 1).padStart(2, '0')}</span>
           <div>
@@ -97,24 +105,43 @@ export default function Projects() {
   useGSAP(() => {
     if (reducedMotion()) return
 
-    // Intro: oversized title shrinks into place while pinned.
-    gsap.timeline({ scrollTrigger: { trigger: '.pj-intro', start: 'top top', end: '+=100%', scrub: 1, pin: true } })
-      .fromTo('.pj-big', { scale: 2.6, opacity: 0.2 }, { scale: 1, opacity: 1, ease: 'none' })
-      .fromTo('.pj-sub', { opacity: 0, y: 40 }, { opacity: 1, y: 0, ease: 'none' }, 0.5)
+    const mm = gsap.matchMedia()
 
-    gsap.utils.toArray<HTMLElement>('.pj-row').forEach((row, i) => {
-      const frame = row.querySelector('.pj-frame')
-      const fromLeft = i % 2 === 0
-      gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 80%', end: 'top 20%', scrub: 1 } })
-        .fromTo(frame, { clipPath: fromLeft ? 'inset(0 100% 0 0 round 24px)' : 'inset(0 0 0 100% round 24px)' }, { clipPath: 'inset(0 0% 0 0% round 24px)', ease: 'none' })
-        .fromTo(row.querySelector('.pj-inner'), { scale: 1.3 }, { scale: 1, ease: 'none' }, 0)
+    // Desktop: oversized title shrinks into place while pinned; screenshots unmask on scroll.
+    mm.add('(min-width: 1024px)', () => {
+      gsap.timeline({ scrollTrigger: { trigger: '.pj-intro', start: 'top top', end: '+=100%', scrub: 1, pin: true } })
+        .fromTo('.pj-big', { scale: 2.6, opacity: 0.2 }, { scale: 1, opacity: 1, ease: 'none' })
+        .fromTo('.pj-sub', { opacity: 0, y: 40 }, { opacity: 1, y: 0, ease: 'none' }, 0.5)
 
-      const imgs = row.querySelectorAll('.pj-img')
-      if (imgs.length) gsap.fromTo(imgs, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: true } })
-      const fans = row.querySelectorAll('.pj-fan')
-      if (fans.length) gsap.from(fans, { y: 80, rotate: (k) => (k ? 8 : -8), opacity: 0, stagger: 0.12, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: row, start: 'top 55%' } })
+      gsap.utils.toArray<HTMLElement>('.pj-row').forEach((row, i) => {
+        const fromLeft = i % 2 === 0
+        gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 80%', end: 'top 20%', scrub: 1 } })
+          .fromTo(row.querySelector('.pj-frame'), { clipPath: fromLeft ? 'inset(0 100% 0 0 round 24px)' : 'inset(0 0 0 100% round 24px)' }, { clipPath: 'inset(0 0% 0 0% round 24px)', ease: 'none' })
+          .fromTo(row.querySelector('.pj-inner'), { scale: 1.3 }, { scale: 1, ease: 'none' }, 0)
+        const imgs = row.querySelectorAll('.pj-img')
+        if (imgs.length) gsap.fromTo(imgs, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: row, start: 'top bottom', end: 'bottom top', scrub: true } })
+        const fans = row.querySelectorAll('.pj-fan')
+        if (fans.length) gsap.from(fans, { y: 80, rotate: (k) => (k ? 8 : -8), opacity: 0, stagger: 0.12, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: row, start: 'top 55%' } })
+      })
+    })
 
-      const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 70%' } })
+    // Phones + tablets (single column): no pin and no scroll-scrubbed masks — the frame plays a short reveal once,
+    // so a screenshot is never half-hidden while you read beside it.
+    mm.add('(max-width: 1023px)', () => {
+      gsap.from('.pj-big', { yPercent: 30, opacity: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.pj-intro', start: 'top 75%' } })
+      gsap.from('.pj-sub', { y: 30, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.pj-sub', start: 'top 90%' } })
+      gsap.utils.toArray<HTMLElement>('.pj-row').forEach((row) => {
+        gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 85%' } })
+          .from(row.querySelector('.pj-frame'), { clipPath: 'inset(12% 6% 12% 6% round 24px)', opacity: 0, duration: 1, ease: 'expo.out' })
+          .from(row.querySelector('.pj-inner'), { scale: 1.15, duration: 1.2, ease: 'expo.out' }, 0)
+        const thumbs = row.querySelectorAll('.pj-thumb')
+        if (thumbs.length) gsap.from(thumbs, { y: 30, opacity: 0, stagger: 0.1, duration: 0.8, ease: 'expo.out', scrollTrigger: { trigger: thumbs[0], start: 'top 95%' } })
+      })
+    })
+
+    // Text reveal (all sizes).
+    gsap.utils.toArray<HTMLElement>('.pj-row').forEach((row) => {
+      const tl = gsap.timeline({ scrollTrigger: { trigger: row.querySelector('.pj-meta'), start: 'top 85%' } })
       tl.from(row.querySelector('.pj-meta'), { x: -40, opacity: 0, duration: 0.9, ease: 'expo.out' })
         .from(row.querySelector('.pj-name .line-mask > span'), { yPercent: 110, duration: 1.1, ease: 'expo.out' }, 0.1)
         .from(row.querySelectorAll('.pj-text'), { y: 30, opacity: 0, stagger: 0.07, duration: 0.9, ease: 'expo.out' }, 0.25)
@@ -123,9 +150,9 @@ export default function Projects() {
 
   return (
     <section id="projects" ref={root} className="relative" aria-labelledby="projects-title">
-      <div className="pj-intro flex min-h-svh flex-col items-center justify-center overflow-hidden px-5 text-center">
+      <div className="pj-intro flex flex-col items-center justify-center overflow-hidden px-5 pb-4 pt-28 text-center lg:min-h-svh lg:py-0">
         <SectionLabel index="03" label="Projects — my best work" className="justify-center" />
-        <h2 id="projects-title" className="pj-big display mt-8 text-[22vw] leading-[0.8] md:text-[16vw]">
+        <h2 id="projects-title" className="pj-big display mt-8 text-[24vw] leading-[0.85] md:text-[16vw]">
           Selected<br /><span className="outline-text">Work</span>
         </h2>
         <p className="pj-sub mt-8 max-w-xl text-lg text-fog">
