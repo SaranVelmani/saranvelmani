@@ -19,7 +19,7 @@ export default function Footer() {
             data-cursor="TOP"
           >
             <span className="mono text-fog transition-colors group-hover:text-snow">Back to top</span>
-            <span className="relative grid h-14 w-14 place-items-center overflow-hidden rounded-full border border-white/20 transition-colors group-hover:border-ember group-hover:bg-ember group-hover:text-ink">
+            <span className="relative grid h-14 w-14 place-items-center overflow-hidden rounded-full border border-white/20 transition-colors group-hover:border-ember group-hover:bg-ember group-hover:text-onaccent">
               <ArrowUp size={20} className="transition-transform duration-500 group-hover:-translate-y-12" />
               <ArrowUp size={20} className="absolute translate-y-12 transition-transform duration-500 group-hover:translate-y-0" />
             </span>

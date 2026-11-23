@@ -78,7 +78,7 @@ export default function Sports() {
       </div>
 
       {/* CRICKET */}
-      <div className="ck-stage relative h-svh overflow-hidden bg-[#080a08]">
+      <div className="ck-stage keep-dark relative h-svh overflow-hidden bg-[#080a08]">
         <div className="floodlight pointer-events-none absolute -left-1/4 -top-1/3 h-[90vh] w-[70vw] rotate-12" />
         <div className="floodlight pointer-events-none absolute -right-1/4 -top-1/3 h-[90vh] w-[70vw] -rotate-12" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-[radial-gradient(ellipse_at_50%_100%,rgba(34,120,60,0.35),transparent_70%)]" />
@@ -155,7 +155,7 @@ export default function Sports() {
       </div>
 
       {/* FOOTBALL */}
-      <div className="fb-stage relative h-svh overflow-hidden bg-[#06100a]">
+      <div className="fb-stage keep-dark relative h-svh overflow-hidden bg-[#06100a]">
         <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.025)_0,rgba(255,255,255,0.025)_8vw,transparent_8vw,transparent_16vw)]" />
         <div className="floodlight pointer-events-none absolute -top-1/3 left-1/2 h-[80vh] w-[90vw] -translate-x-1/2" />
         <p className="fb-word display pointer-events-none absolute bottom-[4%] left-0 whitespace-nowrap text-[24vw] leading-none text-white/[0.06] md:text-[19vw]" aria-hidden="true">FOOTBALL</p>

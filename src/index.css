@@ -9,6 +9,9 @@
   --color-volt: #3d8bff;
   --color-ember: #ff6a2b;
   --color-turf: #22c55e;
+  --color-gold: #f5c451;
+  --color-violet: #a78bfa;
+  --color-onaccent: #07080a;
   --font-display: "Anton", "Impact", sans-serif;
   --font-sans: "Inter Tight", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -18,11 +21,52 @@
 :root {
   color-scheme: dark;
   --line: rgba(255, 255, 255, 0.08);
+  --glass-a: rgba(255, 255, 255, 0.06);
+  --glass-b: rgba(255, 255, 255, 0.02);
+  --outline: rgba(255, 255, 255, 0.45);
   --mx: 50vw;
   --my: 50vh;
 }
 
-html { background: var(--color-ink); }
+/* Light theme: swap the neutral scale. "white" overlays (border-white/10 etc.) become ink overlays. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f3efe7;
+  --color-coal: #e9e4d9;
+  --color-steel: #ddd6c9;
+  --color-fog: #5b5f66;
+  --color-snow: #121418;
+  --color-white: #121418;
+  --color-gold: #a86b0c;
+  --color-violet: #6d3fd6;
+  --line: rgba(18, 20, 24, 0.12);
+  --glass-a: rgba(255, 255, 255, 0.7);
+  --glass-b: rgba(255, 255, 255, 0.35);
+  --outline: rgba(18, 20, 24, 0.5);
+}
+
+/* Night scenes (stadiums, camera, screenshots) stay dark in both themes. */
+:root[data-theme="light"] .keep-dark {
+  color-scheme: dark;
+  --color-ink: #07080a;
+  --color-coal: #0e1013;
+  --color-steel: #16191e;
+  --color-fog: #8b9099;
+  --color-snow: #f3f4f6;
+  --color-white: #fff;
+  --color-gold: #f5c451;
+  --color-violet: #a78bfa;
+  --line: rgba(255, 255, 255, 0.08);
+  --glass-a: rgba(255, 255, 255, 0.06);
+  --glass-b: rgba(255, 255, 255, 0.02);
+  --outline: rgba(255, 255, 255, 0.45);
+  color: var(--color-snow);
+}
+
+/* theme switch: circular wipe (View Transitions) */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+html { background: var(--color-ink); transition: background-color .4s; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
@@ -60,10 +104,10 @@ body {
 .mono { font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.72rem; }
 .serif { font-family: var(--font-serif); font-style: italic; text-transform: none; letter-spacing: 0; }
 
-.outline-text { color: transparent; -webkit-text-stroke: 1px rgba(255, 255, 255, 0.45); }
+.outline-text { color: transparent; -webkit-text-stroke: 1px var(--outline); }
 
 .glass {
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  background: linear-gradient(180deg, var(--glass-a), var(--glass-b));
   border: 1px solid var(--line);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -81,11 +125,11 @@ body {
 }
 .cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--color-ember); }
 .cursor-ring {
-  width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgba(255,255,255,0.5);
+  width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid color-mix(in srgb, var(--color-snow) 50%, transparent);
   transition: width .3s, height .3s, margin .3s, background-color .3s, border-color .3s;
   display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: #000;
 }
-.cursor-ring.is-hover { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(255,255,255,0.95); border-color: transparent; mix-blend-mode: normal; }
+.cursor-ring.is-hover { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: var(--color-snow); color: var(--color-ink); border-color: transparent; mix-blend-mode: normal; }
 @media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
 @media (hover: hover) and (pointer: fine) { .has-cursor, .has-cursor * { cursor: none !important; } }
 

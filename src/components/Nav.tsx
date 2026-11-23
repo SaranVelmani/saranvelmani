@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/motion'
 import { scrollToTarget, getLenis } from '../lib/lenis'
+import ThemeToggle from './ThemeToggle'
 
 const sections = [
   { id: 'home', label: 'Home' },
@@ -98,7 +99,9 @@ export default function Nav({ ready }: { ready: boolean }) {
               </li>
             ))}
           </ul>
-          <a href="#contact" onClick={go('contact')} className="mono hidden rounded-full border border-white/20 px-5 py-3 transition-colors hover:border-ember hover:bg-ember hover:text-ink lg:block">
+          <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <a href="#contact" onClick={go('contact')} className="mono hidden rounded-full border border-white/20 px-5 py-3 transition-colors hover:border-ember hover:bg-ember hover:text-onaccent lg:block">
             Let’s talk
           </a>
           <button
@@ -111,6 +114,7 @@ export default function Nav({ ready }: { ready: boolean }) {
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
+          </div>
         </nav>
       </header>
 

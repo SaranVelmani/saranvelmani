@@ -30,7 +30,7 @@ export default function Lightbox({
   }, [index])
 
   return (
-    <div ref={root} role="dialog" aria-modal="true" aria-label={item.title} className="fixed inset-0 z-[70] flex flex-col bg-ink/95 backdrop-blur-xl">
+    <div ref={root} role="dialog" aria-modal="true" aria-label={item.title} className="keep-dark fixed inset-0 z-[70] flex flex-col bg-ink/95 backdrop-blur-xl">
       <div className="flex items-center justify-between px-5 py-5 md:px-10">
         <p className="mono text-fog">{String(index + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')} — {item.title}</p>
         <button ref={closeBtn} type="button" onClick={onClose} aria-label="Close viewer" className="glass grid h-12 w-12 place-items-center rounded-full"><X size={20} /></button>

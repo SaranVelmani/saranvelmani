@@ -108,7 +108,7 @@ function Download({ accent }: { accent: string }) {
 export default function ProjectVisual({ p }: { p: Project }) {
   const V = { candles: Candles, terminal: Terminal, shield: Shield, bars: Bars, download: Download, book: Bars }[p.visual ?? 'bars']
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 pb-4 pt-8 sm:p-8 md:p-12" style={{ background: `radial-gradient(circle at 30% 20%, ${p.accent}22, transparent 60%), #0b0d10` }}>
+    <div className="keep-dark relative flex h-full w-full items-center justify-center overflow-hidden px-4 pb-4 pt-8 sm:p-8 md:p-12" style={{ background: `radial-gradient(circle at 30% 20%, ${p.accent}22, transparent 60%), #0b0d10` }}>
       <V accent={p.accent} />
       <span className="mono absolute right-4 top-3 text-[9px] text-fog/60">Illustration</span>
     </div>

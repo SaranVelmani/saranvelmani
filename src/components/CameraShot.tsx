@@ -166,7 +166,7 @@ export default function CameraShot() {
       onPointerMove={onMove}
       onClick={onClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); shoot() } }}
-      className="relative h-full w-full select-none overflow-hidden rounded-3xl border border-white/10 bg-black"
+      className="keep-dark relative h-full w-full select-none overflow-hidden rounded-3xl border border-white/10 bg-black"
       data-cursor="SHOOT"
     >
       <div className="cam-aperture absolute inset-0">

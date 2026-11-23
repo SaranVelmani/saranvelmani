@@ -92,7 +92,7 @@ export default function Contact() {
             </p>
             <div className="mt-10 space-y-4">
               <a href={`mailto:${profile.email}`} className="group flex items-center gap-4 text-2xl md:text-3xl" data-cursor="MAIL">
-                <span className="glass grid h-14 w-14 shrink-0 place-items-center rounded-full transition-colors group-hover:bg-ember group-hover:text-ink"><Mail size={22} /></span>
+                <span className="glass grid h-14 w-14 shrink-0 place-items-center rounded-full transition-colors group-hover:bg-ember group-hover:text-onaccent"><Mail size={22} /></span>
                 <span className="break-all border-b border-transparent transition-colors group-hover:border-snow">{profile.email}</span>
               </a>
               <button type="button" onClick={copy} className="mono ml-[4.5rem] inline-flex items-center gap-2 text-fog transition-colors hover:text-snow">

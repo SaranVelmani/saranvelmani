@@ -28,6 +28,7 @@ export default function ParticleField({ className = '' }: { className?: string }
 
     const draw = () => {
       ctx.clearRect(0, 0, w, h)
+      const light = document.documentElement.dataset.theme === 'light'
       for (const p of pts) {
         p.x += p.vx; p.y += p.vy
         if (p.x < 0 || p.x > w) p.vx *= -1
@@ -36,7 +37,7 @@ export default function ParticleField({ className = '' }: { className?: string }
         if (d < 140 && d > 0) { p.x += (dx / d) * 0.8; p.y += (dy / d) * 0.8 }
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = p.hot ? 'rgba(255,106,43,0.9)' : 'rgba(255,255,255,0.55)'
+        ctx.fillStyle = p.hot ? 'rgba(255,106,43,0.9)' : (light ? 'rgba(18,20,24,0.45)' : 'rgba(255,255,255,0.55)')
         ctx.fill()
       }
       for (let i = 0; i < pts.length; i++) {
@@ -47,7 +48,7 @@ export default function ParticleField({ className = '' }: { className?: string }
           const d = Math.hypot(a.x - b.x, a.y - b.y)
           if (d < 110) {
             const near = md < 220 ? 0.35 : 0.08
-            ctx.strokeStyle = `rgba(61,139,255,${(1 - d / 110) * near})`
+            ctx.strokeStyle = `rgba(61,139,255,${(1 - d / 110) * near * (light ? 1.6 : 1)})`
             ctx.lineWidth = 0.6
             ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke()
           }

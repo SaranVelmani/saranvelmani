@@ -83,7 +83,7 @@ export default function SketchStudio() {
   }, { scope: root })
 
   return (
-    <div ref={root} className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_30%_20%,#2a2420,#121014_70%)]">
+    <div ref={root} className="keep-dark relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_30%_20%,#2a2420,#121014_70%)]">
       {/* paper sheet */}
       <div className="absolute inset-[5%] rotate-[-1.5deg] rounded-sm bg-[#efe9dd] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
         <svg viewBox="0 0 520 420" className="h-full w-full" aria-hidden="true">

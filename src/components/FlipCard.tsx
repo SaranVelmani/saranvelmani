@@ -20,7 +20,7 @@ export default function FlipCard({
           {front}
         </span>
         <span
-          className="absolute inset-0 flex flex-col justify-between rounded-3xl p-7 text-ink [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="absolute inset-0 flex flex-col justify-between rounded-3xl p-7 text-onaccent [backface-visibility:hidden] [transform:rotateY(180deg)]"
           style={{ background: accent }}
         >
           {back}

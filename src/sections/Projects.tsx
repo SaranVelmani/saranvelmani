@@ -13,7 +13,7 @@ function Media({ p }: { p: Project }) {
   }
   // Several screenshots: one hero shot plus fanned cards.
   return (
-    <div className="relative h-full w-full bg-[#0b0d10]">
+    <div className="keep-dark relative h-full w-full bg-[#0b0d10]">
       <img src={p.images[0]} alt={`${p.name} screenshot 1`} loading="lazy" className="pj-img h-full w-full object-cover object-top opacity-90" />
       {/* Fanned cards only where there is room; phones get a thumbnail strip under the frame. */}
       <div className="absolute bottom-4 right-4 hidden gap-3 sm:flex md:bottom-8 md:right-8">
@@ -81,7 +81,7 @@ function Row({ p, i }: { p: Project; i: number }) {
         </ul>
         <div className="pj-text mt-8 flex flex-wrap items-center gap-3">
           {p.live && (
-            <a href={p.live} target="_blank" rel="noreferrer" className="group/btn inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-ink transition-transform hover:scale-105" style={{ background: p.accent }}>
+            <a href={p.live} target="_blank" rel="noreferrer" className="group/btn inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-onaccent transition-transform hover:scale-105" style={{ background: p.accent }}>
               Live demo <ArrowUpRight size={16} className="transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
             </a>
           )}

@@ -14,16 +14,20 @@ import Footer from './sections/Footer'
 import { gsap, ScrollTrigger, useGSAP, reducedMotion } from './lib/motion'
 import { startLenis } from './lib/lenis'
 import { orbitTech } from './data/content'
+import { getTheme } from './lib/theme'
 
 // Background tint per section — the page "changes light" as you move through it.
-const tints: [string, string][] = [
-  ['#about', '#07080a'],
-  ['#skills', '#080a10'],
-  ['#projects', '#07080a'],
-  ['#sports', '#060806'],
-  ['#creative', '#0b0a0d'],
-  ['#contact', '#07080a'],
+// [section, dark tint, light tint]
+const tints: [string, string, string][] = [
+  ['#about', '#07080a', '#f3efe7'],
+  ['#skills', '#080a10', '#eceef3'],
+  ['#projects', '#07080a', '#f3efe7'],
+  ['#sports', '#060806', '#ecf1ea'],
+  ['#creative', '#0b0a0d', '#f2ecf0'],
+  ['#contact', '#07080a', '#f3efe7'],
 ]
+let activeTint = -1
+const tintColor = () => (activeTint < 0 ? null : tints[activeTint][getTheme() === 'light' ? 2 : 1])
 
 function Marquee() {
   const items = [...orbitTech, ...orbitTech]
@@ -62,12 +66,20 @@ export default function App() {
   useGSAP(() => {
     gsap.to('.progress-bar', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } })
     if (reducedMotion()) return
-    tints.forEach(([sel, color]) => {
+    tints.forEach(([sel], i) => {
       ScrollTrigger.create({
         trigger: sel, start: 'top 50%', end: 'bottom 50%',
-        onToggle: (self) => self.isActive && gsap.to('.bg-tint', { backgroundColor: color, duration: 1.2, ease: 'power2.out' }),
+        onToggle: (self) => {
+          if (self.isActive) activeTint = i
+          else if (activeTint === i) activeTint = -1
+          gsap.to('.bg-tint', { backgroundColor: tintColor() ?? (getTheme() === 'light' ? '#f3efe7' : '#07080a'), duration: 1.2, ease: 'power2.out' })
+        },
       })
     })
+    // Theme switch: jump the tint straight to the new palette (the wipe hides the change).
+    const onTheme = () => gsap.set('.bg-tint', { backgroundColor: tintColor() ?? (getTheme() === 'light' ? '#f3efe7' : '#07080a') })
+    window.addEventListener('themechange', onTheme)
+    return () => window.removeEventListener('themechange', onTheme)
   })
 
   return (

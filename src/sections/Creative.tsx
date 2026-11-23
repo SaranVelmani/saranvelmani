@@ -16,7 +16,7 @@ function EditTimeline() {
     { name: 'A2', clips: [[12, 40, '#f5c451'], [60, 32, '#f5c451']] },
   ]
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[#0b0c0f] p-5 md:p-7">
+    <div className="keep-dark relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[#0b0c0f] p-5 md:p-7">
       <div className="mb-5 flex items-center justify-between">
         <span className="mono text-fog">Timeline · Sequence 01</span>
         <span className="mono tl-code text-[#a78bfa]">00:00:00:00</span>
@@ -89,17 +89,17 @@ function VideoGrid({ items, onOpen }: { items: MediaItem[]; onOpen: (i: number) 
 
 const crafts = [
   {
-    key: 'draw', index: 'A', title: 'Drawing', accent: '#f3f4f6',
+    key: 'draw', index: 'A', title: 'Drawing', accent: 'var(--color-snow)',
     line: 'Pencil first. Shapes before details.',
     body: 'Drawing is where I slow down. Block in the big shapes, check the proportions, then commit to the line. It’s the same habit I bring to UI work: structure first, polish last.',
   },
   {
-    key: 'photo', index: 'B', title: 'Photography', accent: '#f5c451',
+    key: 'photo', index: 'B', title: 'Photography', accent: 'var(--color-gold)',
     line: 'Light, framing and the right moment.',
     body: 'Photography taught me to look before I act — where the light falls, what to leave out of the frame, and how long to wait for the moment to arrive.',
   },
   {
-    key: 'video', index: 'C', title: 'Video Editing', accent: '#a78bfa',
+    key: 'video', index: 'C', title: 'Video Editing', accent: 'var(--color-violet)',
     line: 'Story lives in the cut.',
     body: 'Editing is rhythm: where to cut, what to hold, when the music should hit. It’s also why I built ClipDub — I wanted tools that do the boring parts of the edit for me.',
   },
@@ -152,7 +152,7 @@ export default function Creative() {
         <SectionLabel index="06" label="Creative — drawing, photography, video" />
         <h2 id="creative-title" className="display mt-8 text-[17vw] md:text-[12vw]">
           <span className="cr-w1 block">Made by</span>
-          <span className="cr-w2 block text-right"><span className="serif normal-case text-[#f5c451]">hand</span> &amp; eye.</span>
+          <span className="cr-w2 block text-right"><span className="serif normal-case text-gold">hand</span> &amp; eye.</span>
         </h2>
       </div>
 
