@@ -2,77 +2,10 @@ import { useCallback, useRef, useState } from 'react'
 import { Play } from 'lucide-react'
 import SectionLabel from '../components/SectionLabel'
 import Lightbox from '../components/Lightbox'
-import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion'
+import SketchStudio from '../components/SketchStudio'
+import CameraShot from '../components/CameraShot'
+import { gsap, useGSAP, reducedMotion } from '../lib/motion'
 import { artworks, photos, videos, type MediaItem } from '../data/media'
-
-/* ── Drawing: a still life that sketches itself — construction first, contour, then hatching. */
-function SketchStillLife() {
-  return (
-    <svg viewBox="0 0 520 420" className="h-full w-full" aria-hidden="true">
-      <g fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" strokeDasharray="4 6">
-        <line className="sk-draw" x1="20" y1="330" x2="500" y2="330" />
-        <circle className="sk-draw" cx="190" cy="230" r="100" />
-        <circle className="sk-draw" cx="385" cy="285" r="45" />
-        <line className="sk-draw" x1="190" y1="110" x2="190" y2="350" />
-        <line className="sk-draw" x1="70" y1="230" x2="310" y2="230" />
-      </g>
-      <g fill="none" stroke="#f3f4f6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        {/* football */}
-        <path className="sk-draw" d="M190,130 C250,130 290,175 290,230 C290,290 245,330 190,330 C130,330 90,288 90,230 C90,172 132,130 190,130" />
-        <path className="sk-draw" d="M190,190 L222,213 L210,250 L170,250 L158,213 Z" />
-        <path className="sk-draw" d="M190,190 L190,132 M222,213 L276,196 M210,250 L240,312 M170,250 L140,312 M158,213 L104,196" />
-        {/* cricket ball */}
-        <path className="sk-draw" d="M385,240 C410,240 430,260 430,285 C430,310 410,330 385,330 C360,330 340,310 340,285 C340,260 360,240 385,240" />
-        <path className="sk-draw" d="M362,248 C380,268 380,302 362,322 M370,244 C390,266 390,304 370,326" />
-        {/* shadow line + pencil signature */}
-        <path className="sk-draw" d="M110,340 C160,352 240,352 280,340 M350,334 C375,340 400,340 425,334" />
-        <path className="sk-draw" d="M420,390 C430,380 440,396 450,386 C458,378 466,392 476,384" stroke="#ff6a2b" />
-      </g>
-      <g stroke="rgba(255,255,255,0.35)" strokeWidth="1">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <line key={i} className="sk-hatch" x1={210 + i * 7} y1={300 - i * 2} x2={190 + i * 7} y2={328 - i * 1} />
-        ))}
-        {Array.from({ length: 6 }).map((_, i) => (
-          <line key={`b${i}`} className="sk-hatch" x1={395 + i * 6} y1={300} x2={388 + i * 6} y2={326} />
-        ))}
-      </g>
-    </svg>
-  )
-}
-
-/* ── Photography: a viewfinder with focus brackets that track the pointer. */
-function Viewfinder() {
-  const frame = useRef<HTMLDivElement>(null)
-  const move = (e: React.PointerEvent) => {
-    if (!finePointer()) return
-    const r = frame.current!.getBoundingClientRect()
-    gsap.to('.vf-focus', { x: e.clientX - r.left - r.width / 2, y: e.clientY - r.top - r.height / 2, duration: 0.5, ease: 'power3.out' })
-    gsap.fromTo('.vf-focus', { scale: 1.25 }, { scale: 1, duration: 0.35, overwrite: 'auto' })
-  }
-  return (
-    <div ref={frame} onPointerMove={move} className="vf relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_30%_30%,rgba(245,196,81,0.18),transparent_55%),radial-gradient(circle_at_80%_80%,rgba(61,139,255,0.15),transparent_50%),#0a0b0d]" data-cursor="FOCUS">
-      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
-        {Array.from({ length: 9 }).map((_, i) => <div key={i} className="border border-white/[0.07]" />)}
-      </div>
-      {['left-4 top-4 border-l-2 border-t-2', 'right-4 top-4 border-r-2 border-t-2', 'left-4 bottom-4 border-l-2 border-b-2', 'right-4 bottom-4 border-r-2 border-b-2'].map((c) => (
-        <span key={c} className={`absolute h-8 w-8 border-white/70 ${c}`} />
-      ))}
-      <svg viewBox="0 0 200 200" className="vf-iris absolute left-1/2 top-1/2 h-[46%] -translate-x-1/2 -translate-y-1/2 opacity-60" aria-hidden="true">
-        <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" />
-        {Array.from({ length: 7 }).map((_, i) => (
-          <path key={i} className="vf-blade" d="M100,100 L100,10 A90,90 0 0 1 170,44 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.3)" transform={`rotate(${i * (360 / 7)} 100 100)`} />
-        ))}
-      </svg>
-      <div className="vf-focus pointer-events-none absolute left-1/2 top-1/2 -ml-10 -mt-8 h-16 w-20 border-2 border-[#f5c451]">
-        <span className="mono absolute -top-6 left-0 text-[9px] text-[#f5c451]">AF · locked</span>
-      </div>
-      <div className="mono absolute inset-x-0 bottom-0 flex justify-between px-6 py-4 text-[10px] text-snow/70">
-        <span className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />REC</span>
-        <span>Light · Frame · Moment</span>
-      </div>
-    </div>
-  )
-}
 
 /* ── Video editing: an edit timeline whose playhead is scrubbed by scroll. */
 function EditTimeline() {
@@ -179,24 +112,11 @@ export default function Creative() {
   const setIndex = useCallback((i: number) => setLb((s) => (s ? { ...s, i } : s)), [])
 
   useGSAP(() => {
-    const rm = reducedMotion()
-
-    // Self-drawing sketch.
-    const strokes = gsap.utils.toArray<SVGGeometryElement>('.sk-draw')
-    strokes.forEach((s) => { const l = s.getTotalLength(); gsap.set(s, { strokeDasharray: rm ? 'none' : `${l}`, strokeDashoffset: rm ? 0 : l }) })
-    if (rm) return
-    gsap.timeline({ scrollTrigger: { trigger: '.cr-draw', start: 'top 70%', end: 'bottom 60%', scrub: 1 } })
-      .to(strokes, { strokeDashoffset: 0, stagger: 0.12, ease: 'none' })
-      .from('.sk-hatch', { opacity: 0, scaleY: 0, transformOrigin: '50% 100%', stagger: 0.03 }, '-=0.4')
+    if (reducedMotion()) return
 
     // Intro: words pull in from both sides.
     gsap.timeline({ scrollTrigger: { trigger: '.cr-intro', start: 'top bottom', end: 'center center', scrub: 1 } })
       .from('.cr-w1', { xPercent: -40 }, 0).from('.cr-w2', { xPercent: 40 }, 0)
-
-    // Viewfinder: iris closes and opens with scroll.
-    gsap.timeline({ scrollTrigger: { trigger: '.cr-photo', start: 'top bottom', end: 'bottom top', scrub: 1 } })
-      .to('.vf-iris', { rotate: 120, ease: 'none' })
-      .to('.vf-blade', { scale: 0.7, transformOrigin: '100px 100px', ease: 'none' }, 0)
 
     // Timeline: playhead runs across as you scroll, timecode follows.
     const code = root.current!.querySelector('.tl-code')!
@@ -223,7 +143,7 @@ export default function Creative() {
   }, { scope: root })
 
   const media = { draw: artworks, photo: photos, video: videos }
-  const visuals = { draw: <SketchStillLife />, photo: <Viewfinder />, video: <EditTimeline /> }
+  const visuals = { draw: <SketchStudio />, photo: <CameraShot />, video: <EditTimeline /> }
   const cls = { draw: 'cr-draw', photo: 'cr-photo', video: 'cr-video' }
 
   return (
@@ -247,7 +167,7 @@ export default function Creative() {
                 <p className="cr-txt serif mt-3 text-3xl" style={{ color: c.accent }}>{c.line}</p>
                 <p className="cr-txt mt-6 max-w-lg text-lg leading-relaxed text-fog">{c.body}</p>
               </div>
-              <div className={`cr-vis aspect-[5/4] lg:col-span-7 ${i % 2 ? 'lg:order-1' : ''} ${c.key === 'draw' ? 'rounded-3xl border border-white/10 bg-[#0c0d10] p-6' : ''}`}>
+              <div className={`cr-vis aspect-[5/4] lg:col-span-7 ${i % 2 ? 'lg:order-1' : ''} `}>
                 {visuals[c.key]}
               </div>
             </div>
