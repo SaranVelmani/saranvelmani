@@ -22,7 +22,7 @@ npm run build    # production build into dist/
 ## Deploy
 
 Pushing to `main` builds and deploys to GitHub Pages via `.github/workflows/deploy.yml`.
-Vercel: `vercel deploy --prod` (config in `vercel.json`). The Pages workflow builds with `BASE=/portfolio/`.
+Hosted on Vercel at https://saranvelmani.vercel.app — `vercel deploy --prod` (config in `vercel.json`). Set `BASE` to build for a sub-path.
 
 ## Accessibility
 
