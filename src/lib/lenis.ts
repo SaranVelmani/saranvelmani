@@ -12,9 +12,9 @@ export function startLenis() {
   return lenis
 }
 
-export function scrollToTarget(target: string | number) {
+export function scrollToTarget(target: string | number, opts: { offset?: number; immediate?: boolean } = {}) {
   if (lenis) {
-    lenis.scrollTo(target as string, { offset: 0, duration: 1.4 })
+    lenis.scrollTo(target as string, { offset: opts.offset ?? 0, duration: 1.4, immediate: opts.immediate })
     return
   }
   if (typeof target === 'number') window.scrollTo({ top: target })

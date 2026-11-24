@@ -1,10 +1,14 @@
-import { useRef } from 'react'
-import { ArrowUpRight, Lock } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight, ChevronDown, Lock } from 'lucide-react'
 import SectionLabel from '../components/SectionLabel'
 import ProjectVisual from '../components/ProjectVisual'
 import { GithubIcon } from '../components/Icons'
-import { gsap, useGSAP, reducedMotion } from '../lib/motion'
+import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/motion'
+import { scrollToTarget } from '../lib/lenis'
 import { projects, type Project } from '../data/content'
+
+const featured = projects.filter((p) => p.featured)
+const more = projects.filter((p) => !p.featured)
 
 function Media({ p }: { p: Project }) {
   if (p.images.length === 0) return <ProjectVisual p={p} />
@@ -101,6 +105,20 @@ function Row({ p, i }: { p: Project; i: number }) {
 
 export default function Projects() {
   const root = useRef<HTMLElement>(null)
+  const [showAll, setShowAll] = useState(false)
+  const first = useRef(true)
+
+  // Page height changed: re-measure every trigger on the page (sections below included).
+  useEffect(() => {
+    if (first.current) { first.current = false; return }
+    requestAnimationFrame(() => ScrollTrigger.refresh())
+  }, [showAll])
+
+  const collapse = () => {
+    setShowAll(false)
+    // rows above the button disappear — keep the button where the reader is
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToTarget('#projects-more', { offset: -window.innerHeight * 0.35, immediate: true })))
+  }
 
   useGSAP(() => {
     if (reducedMotion()) return
@@ -146,7 +164,9 @@ export default function Projects() {
         .from(row.querySelector('.pj-name .line-mask > span'), { yPercent: 110, duration: 1.1, ease: 'expo.out' }, 0.1)
         .from(row.querySelectorAll('.pj-text'), { y: 30, opacity: 0, stagger: 0.07, duration: 0.9, ease: 'expo.out' }, 0.25)
     })
-  }, { scope: root })
+
+    gsap.from('.pj-more > *', { y: 40, opacity: 0, stagger: 0.08, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.pj-more', start: 'top 85%' } })
+  }, { scope: root, dependencies: [showAll], revertOnUpdate: true })
 
   return (
     <section id="projects" ref={root} className="relative" aria-labelledby="projects-title">
@@ -161,7 +181,34 @@ export default function Projects() {
       </div>
 
       <div className="mx-auto max-w-[1600px] divide-y divide-white/10 px-5 md:px-10">
-        {projects.map((p, i) => <Row key={p.name} p={p} i={i} />)}
+        {featured.map((p, i) => <Row key={p.name} p={p} i={i} />)}
+        {showAll && more.map((p, i) => <Row key={p.name} p={p} i={featured.length + i} />)}
+      </div>
+
+      {/* The rest of the work: names up front, full rows on demand. */}
+      <div id="projects-more" className="pj-more mx-auto max-w-[1600px] px-5 pb-24 pt-8 text-center md:px-10 md:pb-32">
+        {!showAll && (
+          <>
+            <p className="mono text-fog">+{more.length} more projects</p>
+            <ul className="mx-auto mt-6 flex max-w-3xl flex-wrap justify-center gap-2">
+              {more.map((p) => (
+                <li key={p.name} className="rounded-full border border-white/10 px-4 py-2 text-sm text-snow/80">
+                  <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: p.accent }} />{p.name}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        <button
+          type="button"
+          onClick={() => (showAll ? collapse() : setShowAll(true))}
+          aria-expanded={showAll}
+          className="group mt-10 inline-flex items-center gap-3 rounded-full bg-snow px-8 py-4 font-semibold text-ink transition-transform hover:scale-105"
+          data-cursor={showAll ? 'LESS' : 'MORE'}
+        >
+          {showAll ? 'Show fewer projects' : `View all ${projects.length} projects`}
+          <ChevronDown size={18} className={`transition-transform duration-500 ${showAll ? 'rotate-180' : 'group-hover:translate-y-0.5'}`} />
+        </button>
       </div>
     </section>
   )

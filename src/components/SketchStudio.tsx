@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { gsap, useGSAP, reducedMotion } from '../lib/motion'
+import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/motion'
 
 // A still life (football, cricket ball, bat) drawn on paper as you scroll, the way a real
 // sketch is built: construction lines → contour → shading → colour wash → signature.
@@ -54,10 +54,9 @@ export default function SketchStudio() {
     gsap.set(q('.sd-ghost'), { opacity: 0 })
     gsap.set(q('.sd-wash'), { opacity: 0, scale: 0.92, transformOrigin: '50% 50%' })
 
-    const tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: { trigger: root.current, start: 'top 75%', end: 'bottom 50%', scrub: 0.8 },
-    })
+    // Time-based (not scroll-scrubbed): once the sheet is on screen the sketch draws itself at its
+    // own pace, so a fast scroll can't skip it — it keeps drawing and is finished when you look back.
+    const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
 
     const draw = (els: SVGPathElement[], speed: number) => els.forEach((s) => {
       const l = s.getTotalLength()
@@ -80,21 +79,24 @@ export default function SketchStudio() {
     step(4); draw(q('.sd-s') as unknown as SVGPathElement[], 300)
     tl.to(pencil, { x: 540, y: 460, duration: 0.4, ease: 'power2.in' })
     tl.fromTo(q('.sd-bar'), { scaleX: 0 }, { scaleX: 1, duration: tl.duration(), ease: 'none' }, 0)
+    tl.timeScale(tl.duration() / 5.5) // whole drawing ≈ 5.5s
+    ScrollTrigger.create({
+      trigger: root.current, start: 'top 80%',
+      onEnter: () => tl.play(),
+      onLeaveBack: () => tl.pause(0), // scrolled back above it: redraw next time
+    })
   }, { scope: root })
 
   return (
     <div ref={root} className="keep-dark relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_30%_20%,#2a2420,#121014_70%)]">
       {/* paper sheet */}
-      <div className="absolute inset-[5%] rotate-[-1.5deg] rounded-sm bg-[#efe9dd] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
+      <div className="absolute inset-[5%] rotate-[-1.5deg] sd-paper rounded-sm bg-[#efe9dd] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
         <svg viewBox="0 0 520 420" className="h-full w-full" aria-hidden="true">
           <defs>
-            <filter id="sd-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" /><feColorMatrix values="0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0.09 0" /></filter>
-            <filter id="sd-water" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="2" /><feDisplacementMap in="SourceGraphic" scale="7" /><feGaussianBlur stdDeviation="0.8" /></filter>
           </defs>
-          <rect width="520" height="420" filter="url(#sd-grain)" />
 
           {/* colour wash (under the lines) */}
-          <g filter="url(#sd-water)">
+          <g>
             <ellipse className="sd-wash" cx="190" cy="346" rx="108" ry="9" fill="#000" fillOpacity="0.12" />
             <ellipse className="sd-wash" cx="362" cy="341" rx="46" ry="5" fill="#000" fillOpacity="0.12" />
             <path className="sd-wash" d="M432,140 L466,140 C469,220 467,290 462,330 C456,338 436,338 430,330 C425,290 428,220 432,140 Z" fill="#d9a55b" fillOpacity="0.6" />

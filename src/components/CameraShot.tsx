@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion'
+import { gsap, ScrollTrigger, useGSAP, reducedMotion, finePointer } from '../lib/motion'
 
 // A camera you can actually "use": scrolling pulls focus and the AF box hunts for the
 // subject, then the aperture fires. Click / tap anywhere to take another frame — each
@@ -58,19 +58,23 @@ export default function CameraShot() {
     if (reducedMotion()) { q('.cam-af')[0]?.classList.add('locked'); return }
     const sx = (SUN.x / W) * 100
     const sy = (SUN.y / H) * 100
-    gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: root.current, start: 'top 85%', end: 'center 55%', scrub: 1,
-        onUpdate: (st) => q('.cam-af')[0].classList.toggle('locked', st.progress > 0.97),
-        onLeave: () => { if (!autoShot.current) { autoShot.current = true; shoot() } },
-      },
+    // Time-based (not scroll-scrubbed): once the camera is on screen it pulls focus, hunts,
+    // locks and fires on its own clock, so scrolling fast can't skip past it.
+    const af = q('.cam-af')[0]
+    const tl = gsap.timeline({
+      paused: true,
+      onComplete: () => { af.classList.add('locked'); if (!autoShot.current) { autoShot.current = true; gsap.delayedCall(0.25, shoot) } },
     })
-      .fromTo(q('.cam-lens'), { filter: 'blur(16px) brightness(0.6)', scale: 1.22 }, { filter: 'blur(0px) brightness(1)', scale: 1, duration: 1 })
+      .fromTo(q('.cam-lens'), { filter: 'blur(10px) brightness(0.6)', scale: 1.18 }, { filter: 'blur(0px) brightness(1)', scale: 1, duration: 1.8, ease: 'power2.inOut' })
       .fromTo(q('.cam-af-pos'),
         { left: '22%', top: '35%' },
-        { keyframes: [{ left: '70%', top: '58%' }, { left: '44%', top: '70%' }, { left: `${sx + 6}%`, top: `${sy - 4}%` }, { left: `${sx}%`, top: `${sy}%` }], duration: 1 }, 0)
-      .fromTo(q('.cam-needle'), { xPercent: -900 }, { keyframes: [{ xPercent: 700 }, { xPercent: -300 }, { xPercent: 0 }], duration: 1 }, 0)
+        { keyframes: [{ left: '70%', top: '58%' }, { left: '44%', top: '70%' }, { left: `${sx + 6}%`, top: `${sy - 4}%` }, { left: `${sx}%`, top: `${sy}%` }], duration: 1.8, ease: 'power1.inOut' }, 0)
+      .fromTo(q('.cam-needle'), { xPercent: -900 }, { keyframes: [{ xPercent: 700 }, { xPercent: -300 }, { xPercent: 0 }], duration: 1.8, ease: 'power1.inOut' }, 0)
+    ScrollTrigger.create({
+      trigger: root.current, start: 'top 80%',
+      onEnter: () => tl.play(),
+      onLeaveBack: () => { tl.pause(0); af.classList.remove('locked') },
+    })
   }, { scope: root })
 
   // where the AF box currently sits, in % of the frame

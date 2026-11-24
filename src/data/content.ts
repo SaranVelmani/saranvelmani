@@ -94,12 +94,15 @@ export type Project = {
   code?: string
   live?: string
   privateRepo?: boolean
+  /** Shown up front; the rest sit behind "View all projects". */
+  featured?: boolean
 }
 
 export const projects: Project[] = [
   {
     name: 'Mero',
     tag: 'AI Expense Tracker',
+    featured: true,
     year: '2026',
     accent: '#3d8bff',
     purpose: 'Type “Petrol 250” and it becomes a ₹250 Transport expense, dated today, with the dashboard updating live. No forms.',
@@ -119,6 +122,7 @@ export const projects: Project[] = [
   {
     name: 'ClipDub',
     tag: 'AI Video Repurposing',
+    featured: true,
     year: '2026',
     accent: '#8b5cf6',
     purpose: 'Turns a long video into captioned 9:16 short clips, a multi-language AI dub, or both in one pass.',
@@ -138,6 +142,7 @@ export const projects: Project[] = [
   {
     name: 'Gold AI',
     tag: 'XAUUSD Research System',
+    featured: true,
     year: '2026',
     accent: '#f5c451',
     purpose: 'An intraday gold-price research system: walk-forward trained models, a live FastAPI engine and a dashboard — with strict rules on which numbers may influence a decision.',
@@ -232,6 +237,7 @@ export const projects: Project[] = [
   {
     name: 'Local Business Web Apps',
     tag: 'Trichy Highway Demos',
+    featured: true,
     year: '2026',
     accent: '#ff6a2b',
     purpose: 'Working web apps pitched to real shops near No.1 Tollgate, Trichy — each leads with a feature the big delivery apps can’t offer.',

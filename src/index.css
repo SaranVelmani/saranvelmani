@@ -63,10 +63,8 @@
   color: var(--color-snow);
 }
 
-/* theme switch: circular wipe (View Transitions) */
-::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 
-html { background: var(--color-ink); transition: background-color .4s; }
+html { background: var(--color-ink); }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
@@ -90,6 +88,7 @@ body {
   opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1.2s steps(6) infinite;
+  will-change: transform;
 }
 @keyframes grain {
   0% { transform: translate(0, 0); }
@@ -187,3 +186,8 @@ input, textarea { font: inherit; }
 @keyframes cam-shim { from { opacity: .12; transform: scaleX(.6); } to { opacity: .6; transform: scaleX(1); } }
 .cam-pulse { animation: cam-pulse 4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
 @keyframes cam-pulse { to { transform: scale(1.12); opacity: .8; } }
+
+/* sketch paper tooth — a cached background image instead of a live SVG filter (cheap to repaint) */
+.sd-paper {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
