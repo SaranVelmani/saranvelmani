@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { Play } from 'lucide-react'
 import SectionLabel from '../components/SectionLabel'
 import Lightbox from '../components/Lightbox'
-import SketchStudio from '../components/SketchStudio'
+import DrawingStage from '../components/DrawingStage'
 import CameraShot from '../components/CameraShot'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion'
 import { artworks, photos, videos, type MediaItem } from '../data/media'
@@ -143,7 +143,7 @@ export default function Creative() {
   }, { scope: root })
 
   const media = { draw: artworks, photo: photos, video: videos }
-  const visuals = { draw: <SketchStudio />, photo: <CameraShot />, video: <EditTimeline /> }
+  const visuals = { draw: null, photo: <CameraShot />, video: <EditTimeline /> }
   const cls = { draw: 'cr-draw', photo: 'cr-photo', video: 'cr-video' }
 
   return (
@@ -156,8 +156,18 @@ export default function Creative() {
         </h2>
       </div>
 
+      {/* A — Drawing: full-bleed pinned sketchbook */}
+      <div className="cr-draw border-t border-white/10">
+        <DrawingStage craft={crafts[0]} />
+        {artworks.length > 0 && (
+          <div className="mx-auto max-w-[1600px] px-5 pb-20 md:px-10">
+            <Masonry items={artworks} label="Drawing gallery" onOpen={(k) => setLb({ items: artworks, i: k })} />
+          </div>
+        )}
+      </div>
+
       <div className="mx-auto max-w-[1600px] px-5 md:px-10">
-        {crafts.map((c, i) => (
+        {crafts.map((c, i) => c.key === 'draw' ? null : (
           <div key={c.key} className={`cr-block ${cls[c.key]} border-t border-white/10 py-20 md:py-28`}>
             <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
               <div className={`relative lg:col-span-5 ${i % 2 ? 'lg:order-2' : ''}`}>
