@@ -1,12 +1,11 @@
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP, reducedMotion } from '../lib/motion'
 import { getLenis } from '../lib/lenis'
-import sketch from '../assets/saran-sketch.webp'
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Drawing — a spiral sketchpad on a lamp-lit desk, pinned while you scroll.
    The cover flips up, then each page draws itself and flips away:
-   01 cover · 02 still life · 03 portrait study · 04 perspective study.
+   01 cover · 02 still life · 03 perspective study.
    Scroll scrubs it; snapping always settles on a finished page, so a fast
    flick can never leave a half-drawn sheet behind.
    ──────────────────────────────────────────────────────────────────────────── */
@@ -34,14 +33,7 @@ const still = {
   ],
 }
 
-// Page 2 — portrait study. viewBox 400×500. Guides, then tone is "shaded in" band by band.
-const portraitGuides = [arc(196, 185, 72, 100), 'M196,70 L196,300', 'M118,176 L274,176', 'M150,238 L242,238', 'M20,372 C120,338 272,338 380,372']
-const toneBands = Array.from({ length: 12 }, (_, i) => {
-  const y = 18 + i * 42
-  return i % 2 ? `M430,${y + 22} C300,${y + 4} 120,${y + 26} -30,${y}` : `M-30,${y} C120,${y + 22} 290,${y - 2} 430,${y + 22}`
-})
-
-// Page 3 — one-point perspective of a cricket ground. viewBox 400×500, vanishing point (200,190)
+// Page 2 — one-point perspective of a cricket ground. viewBox 400×500, vanishing point (200,190)
 const mirror = (d: string) => d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g, (_, x, y) => `${400 - +x},${y}`)
 const tower = 'M52,300 L64,70 M76,300 L66,70 M40,52 L92,52 L92,76 L40,76 Z M53,52 L53,76 M66,52 L66,76 M79,52 L79,76 M40,64 L92,64'
 const stand = 'M10,190 L10,168 L70,158 L132,172 L132,190'
@@ -75,7 +67,6 @@ const sign = (x: number, y: number) =>
 const chapters = [
   { t: 'Open the sketchbook', s: 'Pencil, paper, a lamp.' },
   { t: 'Still life', s: 'Construct · contour · shade · wash' },
-  { t: 'Portrait study', s: 'Guides first, then tone.' },
   { t: 'Perspective', s: 'One point. A cricket ground.' },
 ]
 
@@ -137,7 +128,7 @@ export default function DrawingStage({ craft }: { craft: { index: string; title:
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
-        trigger: root.current, start: 'top top', end: mobile ? '+=320%' : '+=380%',
+        trigger: root.current, start: 'top top', end: mobile ? '+=240%' : '+=290%',
         pin: true, scrub: 1, anticipatePin: 1,
         onUpdate: (self) => { if (self.direction) dir = self.direction },
       },
@@ -193,23 +184,11 @@ export default function DrawingStage({ craft }: { craft: { index: string; title:
       draw('.ds-p1 .s', '.ds-p1 .ds-pencil', 0.25)
       pencilOut('.ds-p1 .ds-pencil', 560, 480)
       tl.addLabel('still')
-      flip('.ds-p1', '.ds-p2')
+      flip('.ds-p1', '.ds-p3')
     })
 
-    // 03 — portrait: construction guides, then tone shaded in, guides fade under it
+    // 03 — perspective study
     chapter(2, () => {
-      pencilIn('.ds-p2 .ds-pencil', 420, 40)
-      draw('.ds-p2 .g', '.ds-p2 .ds-pencil', 0.6)
-      draw('.ds-p2 .t', '.ds-p2 .ds-pencil', 2)
-      tl.to(q('.ds-p2 .ds-guides'), { opacity: 0, duration: 0.5 }, '-=1')
-      draw('.ds-p2 .s', '.ds-p2 .ds-pencil', 0.2)
-      pencilOut('.ds-p2 .ds-pencil', 430, 520)
-      tl.addLabel('portrait')
-      flip('.ds-p2', '.ds-p3')
-    })
-
-    // 04 — perspective study
-    chapter(3, () => {
       pencilIn('.ds-p3 .ds-pencil', 420, 520)
       draw('.ds-p3 .c', '.ds-p3 .ds-pencil', 0.6)
       draw('.ds-p3 .k', '.ds-p3 .ds-pencil', 1.2)
@@ -252,7 +231,7 @@ export default function DrawingStage({ craft }: { craft: { index: string; title:
           <h3 id="drawing-title" className="display mt-2 text-5xl md:text-7xl lg:mt-4 lg:text-8xl">{craft.title}</h3>
           <p className="serif mt-1 text-xl text-snow/90 md:text-3xl lg:mt-3">{craft.line}</p>
           <p className="mt-5 hidden max-w-md leading-relaxed text-fog lg:block">{craft.body}</p>
-          <ol className="mt-4 grid grid-cols-4 gap-2 lg:mt-10 lg:grid-cols-1 lg:gap-5">
+          <ol className="mt-4 grid grid-cols-3 gap-2 lg:mt-10 lg:grid-cols-1 lg:gap-5">
             {chapters.map((c, i) => (
               <li key={c.t} className={`ds-ch ds-ch-${i}`}>
                 <div className="flex items-baseline gap-3">
@@ -285,21 +264,6 @@ export default function DrawingStage({ craft }: { craft: { index: string; title:
                   <g fill="none" stroke={G} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{persp.contour.map((d, i) => <path key={i} className="ds-stroke k" d={d} />)}</g>
                   <g fill="none" stroke={G} strokeOpacity="0.5" strokeWidth="0.9" strokeLinecap="round">{persp.hatch.map((d, i) => <path key={i} className="ds-stroke h" d={d} />)}</g>
                   <path className="ds-stroke s" d={sign(318, 470)} fill="none" stroke="#ff6a2b" strokeWidth="2" strokeLinecap="round" />
-                  <Pencil />
-                </svg>
-              </Sheet>
-
-              <Sheet cls="ds-p2" caption="Portrait study · from a photo">
-                <svg viewBox="0 0 400 500" className="absolute inset-0 h-full w-full" aria-hidden="true">
-                  <defs>
-                    <mask id="ds-tone" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="500">
-                      <rect width="400" height="500" fill="#000" />
-                      <g fill="none" stroke="#fff" strokeWidth="56" strokeLinecap="round">{toneBands.map((d, i) => <path key={i} className="ds-stroke t" d={d} />)}</g>
-                    </mask>
-                  </defs>
-                  <g className="ds-guides" fill="none" stroke={B} strokeWidth="1.1" strokeLinecap="round">{portraitGuides.map((d, i) => <path key={i} className="ds-stroke g" d={d} />)}</g>
-                  <image href={sketch} x="20" y="22" width="360" height="450" preserveAspectRatio="xMidYMid slice" mask="url(#ds-tone)" />
-                  <path className="ds-stroke s" d={sign(318, 474)} fill="none" stroke="#ff6a2b" strokeWidth="2" strokeLinecap="round" />
                   <Pencil />
                 </svg>
               </Sheet>
